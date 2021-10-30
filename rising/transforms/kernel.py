@@ -1,4 +1,5 @@
 import math
+from functools import lru_cache
 from typing import Callable, Sequence, Union
 
 import torch
@@ -107,13 +108,19 @@ class KernelTransform(AbstractTransform):
         Returns:
             dict: dict with transformed data
         """
-        dtype = data[self.keys[0]].dtype
-        self.to(dtype)
+        dtype, device = data[self.keys[0]].dtype, data[self.keys[0]].device
+        self._convert(device=device, dtype=dtype)
+
         for key, padding_mode in zip(self.keys, self.padding_mode):
             inp_pad = F.pad(data[key], self.padding, mode=padding_mode)
 
             data[key] = self.conv(inp_pad, weight=self.weight, groups=self.groups, stride=self.stride)
         return data
+
+    @lru_cache()
+    def _convert(self, device, dtype):
+        self.type(dtype)
+        self.to(device)
 
 
 class GaussianSmoothing(KernelTransform):

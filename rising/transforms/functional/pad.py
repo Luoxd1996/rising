@@ -31,19 +31,8 @@ def pad(data: Tensor, pad_size: Union[int, Sequence[int]], grid_pad=False, mode=
         raise NotImplementedError(grid_pad)
 
 
-#
-# if __name__ == '__main__':
-#     from PIL import Image
-#     import requests
-#     from io import BytesIO
-#     import numpy as np
-#     import torch
-#     from torch.nn import functional as F
-#
-#     url = "https://miro.medium.com/max/1400/0*1F2u74JQYI8sUuYg"
-#     response = requests.get(url)
-#     img = Image.open(BytesIO(response.content))
-#     np_img = np.asarray(img).astype(np.float32)
-#     t_img = torch.from_numpy(np_img).permute(2, 0, 1)
-#     t_img = t_img[None, ...]
-#     t_img_pad = F.pad(t_img, pad=(200, 200, 400, 400), mode="replicate")
+def pad_parameters(input_shape: Union[int, Sequence[int]], resize_shape: Union[int, Sequence[int]], *, ndim: int):
+    input_shape = ntuple(ndim)(input_shape)
+    resize_shape = ntuple(ndim)(resize_shape)
+    shape_difference = (max(0, r - i) for r, i in zip(resize_shape, input_shape))
+    return [sub for y in [(x // 2, x - (x // 2)) for x in shape_difference] for sub in y][::-1]

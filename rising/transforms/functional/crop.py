@@ -124,3 +124,10 @@ def random_crop(
         for img_dim, crop_dim, dist_dim in zip(data_shape, size, dist)
     ]
     return crop(data, corner, size, grid_crop=grid_crop)
+
+
+def random_crop_with_pad(data, size, pad, dist, pad_value):
+    """
+    todo: this function crop an image with padding if necessary.
+    """
+    pass
